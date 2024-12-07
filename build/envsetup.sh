@@ -1,13 +1,13 @@
-function __print_blaze_functions_help() {
+function __print_lessaosp_functions_help() {
 cat <<EOF
 Additional LineageOS functions:
 - cout:            Changes directory to out.
 - mmp:             Builds all of the modules in the current directory and pushes them to the device.
 - mmap:            Builds all of the modules in the current directory and its dependencies, then pushes the package to the device.
 - mmmp:            Builds all of the modules in the supplied directories and pushes them to the device.
-- blazegerrit:   A Git wrapper that fetches/pushes patch from/to LineageOS Gerrit Review.
-- blazerebase:   Rebase a Gerrit change and push it again.
-- blazeremote:   Add git remote for LineageOS Gerrit Review.
+- lessaospgerrit:   A Git wrapper that fetches/pushes patch from/to LineageOS Gerrit Review.
+- lessaosprebase:   Rebase a Gerrit change and push it again.
+- lessaospremote:   Add git remote for LineageOS Gerrit Review.
 - aospremote:      Add git remote for matching AOSP repository.
 - cloremote:       Add git remote for matching CodeLinaro repository.
 - githubremote:    Add git remote for LineageOS Github.
@@ -69,7 +69,7 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    local aosp_target_release=$(cat ${ANDROID_BUILD_TOP}/vendor/blaze/vars/aosp_target_release 2>/dev/null)
+    local aosp_target_release=$(cat ${ANDROID_BUILD_TOP}/vendor/lessaosp/vars/aosp_target_release 2>/dev/null)
 
     if [ $# -eq 0 ]; then
         # No arguments, so let's have the full menu
@@ -84,7 +84,7 @@ function breakfast()
                 variant="userdebug"
             fi
 
-            lunch blaze_$target-$aosp_target_release-$variant
+            lunch lessaosp_$target-$aosp_target_release-$variant
         fi
     fi
     return $?
@@ -95,7 +95,7 @@ alias bib=breakfast
 function eat()
 {
     if [ "$OUT" ] ; then
-        ZIPPATH=`ls -tr "$OUT"/blaze-*.zip | tail -1`
+        ZIPPATH=`ls -tr "$OUT"/lessaosp-*.zip | tail -1`
         if [ ! -f $ZIPPATH ] ; then
             echo "Nothing to eat"
             return 1
@@ -103,13 +103,13 @@ function eat()
         echo "Waiting for device..."
         adb wait-for-device-recovery
         echo "Found device"
-        if (adb shell getprop ro.blaze.device | grep -q "$BLAZE_BUILD"); then
+        if (adb shell getprop ro.lessaosp.device | grep -q "$LESSAOSP_BUILD"); then
             echo "Rebooting to sideload for install"
             adb reboot sideload-auto-reboot
             adb wait-for-sideload
             adb sideload $ZIPPATH
         else
-            echo "The connected device does not appear to be $BLAZE_BUILD, run away!"
+            echo "The connected device does not appear to be $LESSAOSP_BUILD, run away!"
         fi
         return $?
     else
@@ -233,28 +233,28 @@ function dddclient()
    fi
 }
 
-function blazeremote()
+function lessaospremote()
 {
     if ! git rev-parse --git-dir &> /dev/null
     then
         echo ".git directory not found. Please run this from the root directory of the Android repository you wish to set up."
         return 1
     fi
-    git remote rm blaze 2> /dev/null
+    git remote rm lessaosp 2> /dev/null
     local REMOTE=$(git config --get remote.github.projectname)
-    local BLAZE="true"
+    local LESSAOSP="true"
     if [ -z "$REMOTE" ]
     then
         REMOTE=$(git config --get remote.aosp.projectname)
-        BLAZE="false"
+        LESSAOSP="false"
     fi
     if [ -z "$REMOTE" ]
     then
         REMOTE=$(git config --get remote.clo.projectname)
-        BLAZE="false"
+        LESSAOSP="false"
     fi
 
-    if [ $BLAZE = "false" ]
+    if [ $LESSAOSP = "false" ]
     then
         local PROJECT=$(echo $REMOTE | sed -e "s#platform/#android/#g; s#/#_#g")
         local PFX="LineageOS/"
@@ -262,14 +262,14 @@ function blazeremote()
         local PROJECT=$REMOTE
     fi
 
-    local BLAZE_USER=$(git config --get review.review.blazeos.org.username)
-    if [ -z "$BLAZE_USER" ]
+    local LESSAOSP_USER=$(git config --get review.review.lessaosp.org.username)
+    if [ -z "$LESSAOSP_USER" ]
     then
-        git remote add blaze ssh://review.blazeos.org:29418/$PFX$PROJECT
+        git remote add lessaosp ssh://review.lessaosp.org:29418/$PFX$PROJECT
     else
-        git remote add blaze ssh://$BLAZE_USER@review.blazeos.org:29418/$PFX$PROJECT
+        git remote add lessaosp ssh://$LESSAOSP_USER@review.lessaosp.org:29418/$PFX$PROJECT
     fi
-    echo "Remote 'blaze' created"
+    echo "Remote 'lessaosp' created"
 }
 
 function aospremote()
@@ -380,14 +380,14 @@ function installboot()
     adb wait-for-device-recovery
     adb root
     adb wait-for-device-recovery
-    if (adb shell getprop ro.blaze.device | grep -q "$BLAZE_BUILD");
+    if (adb shell getprop ro.lessaosp.device | grep -q "$LESSAOSP_BUILD");
     then
         adb push $OUT/boot.img /cache/
         adb shell dd if=/cache/boot.img of=$PARTITION
         adb shell rm -rf /cache/boot.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $BLAZE_BUILD, run away!"
+        echo "The connected device does not appear to be $LESSAOSP_BUILD, run away!"
     fi
 }
 
@@ -418,14 +418,14 @@ function installrecovery()
     adb wait-for-device-recovery
     adb root
     adb wait-for-device-recovery
-    if (adb shell getprop ro.blaze.device | grep -q "$BLAZE_BUILD");
+    if (adb shell getprop ro.lessaosp.device | grep -q "$LESSAOSP_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         adb shell rm -rf /cache/recovery.img
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $BLAZE_BUILD, run away!"
+        echo "The connected device does not appear to be $LESSAOSP_BUILD, run away!"
     fi
 }
 
@@ -445,13 +445,13 @@ function makerecipe() {
     if [ "$REPO_REMOTE" = "github" ]
     then
         pwd
-        blazeremote
-        git push blaze HEAD:refs/heads/'$1'
+        lessaospremote
+        git push lessaosp HEAD:refs/heads/'$1'
     fi
     '
 }
 
-function blazegerrit() {
+function lessaospgerrit() {
     if [ "$(basename $SHELL)" = "zsh" ]; then
         # zsh does not define FUNCNAME, derive from funcstack
         local FUNCNAME=$funcstack[1]
@@ -461,7 +461,7 @@ function blazegerrit() {
         $FUNCNAME help
         return 1
     fi
-    local user=`git config --get review.review.blazeos.org.username`
+    local user=`git config --get review.lessaosp.org.username`
     local review=`git config --get remote.github.review`
     local project=`git config --get remote.github.projectname`
     local command=$1
@@ -497,7 +497,7 @@ EOF
             case $1 in
                 __cmg_*) echo "For internal use only." ;;
                 changes|for)
-                    if [ "$FUNCNAME" = "blazegerrit" ]; then
+                    if [ "$FUNCNAME" = "lessaospgerrit" ]; then
                         echo "'$FUNCNAME $1' is deprecated."
                     fi
                     ;;
@@ -590,7 +590,7 @@ EOF
                 ${local_branch}:refs/for/$remote_branch || return 1
             ;;
         changes|for)
-            if [ "$FUNCNAME" = "blazegerrit" ]; then
+            if [ "$FUNCNAME" = "lessaospgerrit" ]; then
                 echo >&2 "'$FUNCNAME $command' is deprecated."
             fi
             ;;
@@ -689,7 +689,7 @@ EOF
     esac
 }
 
-function blazerebase() {
+function lessaosprebase() {
     local repo=$1
     local refs=$2
     local pwd="$(pwd)"
@@ -697,7 +697,7 @@ function blazerebase() {
 
     if [ -z $repo ] || [ -z $refs ]; then
         echo "LineageOS Gerrit Rebase Usage: "
-        echo "      blazerebase <path to project> <patch IDs on Gerrit>"
+        echo "      lessaosprebase <path to project> <patch IDs on Gerrit>"
         echo "      The patch IDs appear on the Gerrit commands that are offered."
         echo "      They consist on a series of numbers and slashes, after the text"
         echo "      refs/changes. For example, the ID in the following command is 26/8126/2"
@@ -718,7 +718,7 @@ function blazerebase() {
     echo "Bringing it up to date..."
     repo sync .
     echo "Fetching change..."
-    git fetch "http://review.blazeos.org/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
+    git fetch "http://review.lessaosp.org/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
     if [ "$?" != "0" ]; then
         echo "Error cherry-picking. Not uploading!"
         return
@@ -802,7 +802,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell getprop ro.blaze.device | grep -q "$BLAZE_BUILD") || [ "$FORCE_PUSH" = "true" ];
+    if (adb shell getprop ro.lessaosp.device | grep -q "$LESSAOSP_BUILD") || [ "$FORCE_PUSH" = "true" ];
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices \
@@ -921,7 +921,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $BLAZE_BUILD, run away!"
+        echo "The connected device does not appear to be $LESSAOSP_BUILD, run away!"
     fi
 }
 
@@ -934,7 +934,7 @@ alias cmkap='dopush cmka'
 
 function repopick() {
     T=$(gettop)
-    $T/vendor/blaze/build/tools/repopick.py $@
+    $T/vendor/lessaosp/build/tools/repopick.py $@
 }
 
 function sort-blobs-list() {
@@ -946,7 +946,7 @@ function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
     common_target_out=common-${target_device}
-    if [ ! -z $BLAZE_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $LESSAOSP_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_target_out} ${common_out_dir}

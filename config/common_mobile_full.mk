@@ -1,5 +1,5 @@
-# Inherit common Blaze stuff
-$(call inherit-product, vendor/blaze/config/common_mobile.mk)
+# Inherit common LESSAOSP stuff
+$(call inherit-product, vendor/lessaosp/config/common_mobile.mk)
 
 PRODUCT_SIZE := full
 
@@ -36,6 +36,6 @@ PRODUCT_PACKAGES += \
     FontLatoOverlay \
     FontRubikOverlay
 
-# Include Blaze LatinIME dictionaries
-PRODUCT_PACKAGE_OVERLAYS += vendor/blaze/overlay/dictionaries
-PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/blaze/overlay/dictionaries
+# Include LESSAOSP LatinIME dictionaries
+PRODUCT_PACKAGE_OVERLAYS += vendor/lessaosp/overlay/dictionaries
+PRODUCT_ENFORCE_RRO_EXCLUDED_OVERLAYS += vendor/lessaosp/overlay/dictionaries

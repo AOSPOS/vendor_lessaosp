@@ -1,4 +1,4 @@
-# Copyright (C) 2022-2024 ProjectBlaze
+# Copyright (C) 2024 LESSAOSP
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,59 +13,59 @@
 # limitations under the License.
 
 ANDROID_VERSION := 15
-BLAZEVERSION := 4.0
+LESSAOSPVERSION := 4.0
 
-BLAZE_BUILD_TYPE ?= UNOFFICIAL
-BLAZE_MAINTAINER ?= UNKNOWN
-BLAZE_DATE_YEAR := $(shell date -u +%Y)
-BLAZE_DATE_MONTH := $(shell date -u +%m)
-BLAZE_DATE_DAY := $(shell date -u +%d)
-BLAZE_DATE_HOUR := $(shell date -u +%H)
-BLAZE_DATE_MINUTE := $(shell date -u +%M)
-BLAZE_BUILD_DATE := $(BLAZE_DATE_YEAR)$(BLAZE_DATE_MONTH)$(BLAZE_DATE_DAY)-$(BLAZE_DATE_HOUR)$(BLAZE_DATE_MINUTE)
-TARGET_PRODUCT_SHORT := $(subst blaze_,,$(BLAZE_BUILD))
+LESSAOSP_BUILD_TYPE ?= UNOFFICIAL
+LESSAOSP_MAINTAINER ?= UNKNOWN
+LESSAOSP_DATE_YEAR := $(shell date -u +%Y)
+LESSAOSP_DATE_MONTH := $(shell date -u +%m)
+LESSAOSP_DATE_DAY := $(shell date -u +%d)
+LESSAOSP_DATE_HOUR := $(shell date -u +%H)
+LESSAOSP_DATE_MINUTE := $(shell date -u +%M)
+LESSAOSP_BUILD_DATE := $(LESSAOSP_DATE_YEAR)$(LESSAOSP_DATE_MONTH)$(LESSAOSP_DATE_DAY)-$(LESSAOSP_DATE_HOUR)$(LESSAOSP_DATE_MINUTE)
+TARGET_PRODUCT_SHORT := $(subst lessaosp_,,$(LESSAOSP_BUILD))
 
 # OFFICIAL_DEVICES
-ifeq ($(BLAZE_BUILD_TYPE), OFFICIAL)
-  LIST = $(shell cat vendor/blaze/config/blaze.devices)
-    ifeq ($(filter $(BLAZE_BUILD), $(LIST)), $(BLAZE_BUILD))
+ifeq ($(LESSAOSP_BUILD_TYPE), OFFICIAL)
+  LIST = $(shell cat vendor/lessaosp/config/lessaosp.devices)
+    ifeq ($(filter $(LESSAOSP_BUILD), $(LIST)), $(LESSAOSP_BUILD))
       IS_OFFICIAL=true
-      BLAZE_BUILD_TYPE := OFFICIAL
+      LESSAOSP_BUILD_TYPE := OFFICIAL
     endif
     ifneq ($(IS_OFFICIAL), true)
-      BLAZE_BUILD_TYPE := UNOFFICIAL
-      $(error Device is not official "$(BLAZE_BUILD)")
+      LESSAOSP_BUILD_TYPE := UNOFFICIAL
+      $(error Device is not official "$(LESSAOSP_BUILD)")
     endif
 endif
 
-BLAZE_VERSION := $(BLAZEVERSION)-$(BLAZE_BUILD)-$(BLAZE_BUILD_DATE)-VANILLA-$(BLAZE_BUILD_TYPE)
+LESSAOSP_VERSION := $(LESSAOSPVERSION)-$(LESSAOSP_BUILD)-$(LESSAOSP_BUILD_DATE)-VANILLA-$(LESSAOSP_BUILD_TYPE)
 ifeq ($(WITH_GAPPS), true)
-BLAZE_VERSION := $(BLAZEVERSION)-$(BLAZE_BUILD)-$(BLAZE_BUILD_DATE)-GAPPS-$(BLAZE_BUILD_TYPE)
+LESSAOSP_VERSION := $(LESSAOSPVERSION)-$(LESSAOSP_BUILD)-$(LESSAOSP_BUILD_DATE)-GAPPS-$(LESSAOSP_BUILD_TYPE)
 endif
-BLAZE_MOD_VERSION :=$(ANDROID_VERSION)-$(BLAZEVERSION)
-BLAZE_DISPLAY_VERSION := ProjectBlaze-$(BLAZEVERSION)-$(BLAZE_BUILD_TYPE)
-BLAZE_DISPLAY_BUILDTYPE := $(BLAZE_BUILD_TYPE)
-BLAZE_FINGERPRINT := ProjectBlaze/$(BLAZE_MOD_VERSION)/$(TARGET_PRODUCT_SHORT)/$(BLAZE_BUILD_DATE)
+LESSAOSP_MOD_VERSION :=$(ANDROID_VERSION)-$(LESSAOSPVERSION)
+LESSAOSP_DISPLAY_VERSION := LESSAOSP-$(LESSAOSPVERSION)-$(LESSAOSP_BUILD_TYPE)
+LESSAOSP_DISPLAY_BUILDTYPE := $(LESSAOSP_BUILD_TYPE)
+LESSAOSP_FINGERPRINT := LESSAOSP/$(LESSAOSP_MOD_VERSION)/$(TARGET_PRODUCT_SHORT)/$(LESSAOSP_BUILD_DATE)
 
-# BLAZE System Version
+# LESSAOSP System Version
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
-  ro.blaze.version=$(BLAZE_DISPLAY_VERSION) \
-  ro.blaze.build.status=$(BLAZE_BUILD_TYPE) \
-  ro.modversion=$(BLAZE_MOD_VERSION) \
-  ro.blaze.build.date=$(BLAZE_BUILD_DATE) \
-  ro.blaze.buildtype=$(BLAZE_BUILD_TYPE) \
-  ro.blaze.fingerprint=$(BLAZE_FINGERPRINT) \
-  ro.blaze.device=$(BLAZE_BUILD) \
-  org.blaze.version=$(BLAZEVERSION) \
-  ro.blaze.maintainer=$(BLAZE_MAINTAINER)
+  ro.lessaosp.version=$(LESSAOSP_DISPLAY_VERSION) \
+  ro.lessaosp.build.status=$(LESSAOSP_BUILD_TYPE) \
+  ro.modversion=$(LESSAOSP_MOD_VERSION) \
+  ro.lessaosp.build.date=$(LESSAOSP_BUILD_DATE) \
+  ro.lessaosp.buildtype=$(LESSAOSP_BUILD_TYPE) \
+  ro.lessaosp.fingerprint=$(LESSAOSP_FINGERPRINT) \
+  ro.lessaosp.device=$(LESSAOSP_BUILD) \
+  org.lessaosp.version=$(LESSAOSPVERSION) \
+  ro.lessaosp.maintainer=$(LESSAOSP_MAINTAINER)
 
 # Sign Build
 ifneq (eng,$(TARGET_BUILD_VARIANT))
-ifneq (,$(wildcard vendor/blaze/signing/keys/releasekey.pk8))
-PRODUCT_DEFAULT_DEV_CERTIFICATE := vendor/blaze/signing/keys/releasekey
+ifneq (,$(wildcard vendor/lessaosp/signing/keys/releasekey.pk8))
+PRODUCT_DEFAULT_DEV_CERTIFICATE := vendor/lessaosp/signing/keys/releasekey
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += ro.oem_unlock_supported=1
 endif
-ifneq (,$(wildcard vendor/blaze/signing/keys/otakey.x509.pem))
-PRODUCT_OTA_PUBLIC_KEYS := vendor/blaze/signing/keys/otakey.x509.pem
+ifneq (,$(wildcard vendor/lessaosp/signing/keys/otakey.x509.pem))
+PRODUCT_OTA_PUBLIC_KEYS := vendor/lessaosp/signing/keys/otakey.x509.pem
 endif
 endif

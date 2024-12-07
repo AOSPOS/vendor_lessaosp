@@ -1,8 +1,8 @@
-# Inherit mobile full common Blaze stuff
-$(call inherit-product, vendor/blaze/config/common_mobile_full.mk)
+# Inherit mobile full common LESSAOSP stuff
+$(call inherit-product, vendor/lessaosp/config/common_mobile_full.mk)
 
 # Enable support of one-handed mode
 PRODUCT_PRODUCT_PROPERTIES += \
     ro.support_one_handed_mode?=true
 
-$(call inherit-product, vendor/blaze/config/telephony.mk)
+$(call inherit-product, vendor/lessaosp/config/telephony.mk)

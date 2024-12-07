@@ -1,5 +1,5 @@
-# Inherit common mobile Blaze stuff
-$(call inherit-product, vendor/blaze/config/common.mk)
+# Inherit common mobile LESSAOSP stuff
+$(call inherit-product, vendor/lessaosp/config/common.mk)
 
 # Themes
 PRODUCT_PACKAGES += \
